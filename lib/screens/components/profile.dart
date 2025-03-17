@@ -100,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const CircleAvatar(
                           radius: 50,
                           backgroundImage: NetworkImage(
-                            'https://via.placeholder.com/100', // Replace with actual image URL
+                            'https://firebasestorage.googleapis.com/v0/b/carboncredit-calda.appspot.com/o/images%2FUmvhefh8yiR7EcSD5kKrCVIQQwK2%2Fuser-icon-1024x1024-dtzturco.png?alt=media&token=973abd77-b068-4038-96f8-983f428133ad', // Replace with actual image URL
                           ),
                         ),
                         Positioned(

@@ -296,7 +296,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EnterAmount(
+                      builder: (context) => AboutYourOrder(
                         address: widget.address,
                         dateTime: selectedDateTime,
                       ),

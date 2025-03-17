@@ -54,12 +54,7 @@ class FreelancerCard extends StatelessWidget {
               : null,
         ),
         title: Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        trailing: ElevatedButton(
-          onPressed: () {
-            // Action when clicked
-          },
-          child: const Text("Hire"),
-        ),
+        
       ),
     );
   }
