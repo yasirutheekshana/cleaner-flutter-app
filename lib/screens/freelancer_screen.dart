@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _userName;
   List<Map<String, dynamic>> _upcomingOrders = [];
   List<Map<String, dynamic>> _completeOrders = [];
-  List<Map<String, dynamic>> _acceptedeOrders = [];
+  List<Map<String, dynamic>> _acceptedOrders = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -91,11 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         // Fetch orders from 'new_orders' collection
-        QuerySnapshot orderSnapshot =
-            await _firestore
-                .collection('new_orders')
-                .where('cleanerId', isEqualTo: userId)
-                .get();
+        QuerySnapshot orderSnapshot = await _firestore
+            .collection('new_orders')
+            .where('cleanerId', isEqualTo: userId)
+            .get();
 
         List<Map<String, dynamic>> upcoming = [];
         List<Map<String, dynamic>> complete = [];
@@ -125,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _upcomingOrders = upcoming;
           _completeOrders = complete;
-          _acceptedeOrders = accepted;
+          _acceptedOrders = accepted;
         });
       }
     } catch (e) {
@@ -143,6 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _fetchUserData();
     } catch (e) {
       print("Error updating order status: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error updating order status. Try again.")),
+      );
     }
   }
 
@@ -178,78 +180,145 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               SizedBox(
                 height: 100,
-                child:
-                    _upcomingOrders.isEmpty
-                        ? const Center(
-                          child: Text(
-                            "Empty",
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _upcomingOrders.length,
-                          itemBuilder: (context, index) {
-                            final order = _upcomingOrders[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Container(
-                                width:
-                                    180, // Increased width to fit the status text
-                                decoration: BoxDecoration(
-                                  color: Colors.purple[100],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        order["date"]!,
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      Text(
-                                        order["time"]!,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.check_circle,
-                                              color: Colors.green,
-                                            ),
-                                            onPressed: () {
-                                              _updateOrderStatus(
-                                                order["id"],
-                                                "accepted",
-                                              );
-                                            },
+                child: _upcomingOrders.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Empty",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _upcomingOrders.length,
+                        itemBuilder: (context, index) {
+                          final order = _upcomingOrders[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Container(
+                              width: 180, // Increased width to fit the buttons
+                              decoration: BoxDecoration(
+                                color: Colors.purple[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      order["date"]!,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Text(
+                                      order["time"]!,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
                                           ),
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.cancel,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              _updateOrderStatus(
-                                                order["id"],
-                                                "declined",
-                                              );
-                                            },
+                                          onPressed: () {
+                                            _updateOrderStatus(
+                                              order["id"],
+                                              "accepted",
+                                            );
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.cancel,
+                                            color: Colors.red,
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                          onPressed: () {
+                                            _updateOrderStatus(
+                                              order["id"],
+                                              "declined",
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 16),
+
+              // Accepted Orders Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Accept orders",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child: _acceptedOrders.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Empty",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _acceptedOrders.length,
+                        itemBuilder: (context, index) {
+                          final order = _acceptedOrders[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Container(
+                              width: 180, // Increased width to fit the button
+                              decoration: BoxDecoration(
+                                color: Colors.purple[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      order["date"]!,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Text(
+                                      order["time"]!,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.done_all,
+                                        color: Colors.blue,
+                                      ),
+                                      onPressed: () {
+                                        _updateOrderStatus(
+                                          order["id"],
+                                          "completed",
+                                        );
+                                      },
+                                      tooltip: "Mark as Completed",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ),
               const SizedBox(height: 16),
 
@@ -266,101 +335,45 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               SizedBox(
                 height: 100,
-                child:
-                    _completeOrders.isEmpty
-                        ? const Center(
-                          child: Text(
-                            "Empty",
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _completeOrders.length,
-                          itemBuilder: (context, index) {
-                            final order = _completeOrders[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                  color: Colors.purple[100],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        order["date"]!,
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      Text(
-                                        order["time"]!,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
+                child: _completeOrders.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Empty",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _completeOrders.length,
+                        itemBuilder: (context, index) {
+                          final order = _completeOrders[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Container(
+                              width: 150,
+                              decoration: BoxDecoration(
+                                color: Colors.purple[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      order["date"]!,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    Text(
+                                      order["time"]!,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
-              ),
-              const SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Accept orders",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 100,
-                child:
-                    _acceptedeOrders.isEmpty
-                        ? const Center(
-                          child: Text(
-                            "Empty",
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _acceptedeOrders.length,
-                          itemBuilder: (context, index) {
-                            final order = _acceptedeOrders[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                  color: Colors.purple[100],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        order["date"]!,
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      Text(
-                                        order["time"]!,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
+                      ),
               ),
               const SizedBox(height: 16),
             ],
