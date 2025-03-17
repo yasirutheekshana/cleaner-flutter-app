@@ -64,7 +64,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? _userName;
   List<Map<String, dynamic>> _upcomingOrders = [];
+  List<Map<String, dynamic>> _declineOrders = [];
   List<Map<String, dynamic>> _completeOrders = [];
+  List<Map<String, dynamic>> _acceptedeOrders = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -98,6 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         List<Map<String, dynamic>> upcoming = [];
         List<Map<String, dynamic>> complete = [];
+        List<Map<String, dynamic>> declined = [];
+        List<Map<String, dynamic>> accepted = [];
 
         for (var doc in orderSnapshot.docs) {
           final data = doc.data() as Map<String, dynamic>;
@@ -115,12 +119,18 @@ class _HomeScreenState extends State<HomeScreen> {
             upcoming.add(orderData);
           } else if (orderStatus == 'completed') {
             complete.add(orderData);
+          } else if (orderStatus == 'declined') {
+            declined.add(orderData);
+          } else if (orderStatus == 'accepted') {
+            accepted.add(orderData);
           }
         }
 
         setState(() {
           _upcomingOrders = upcoming;
           _completeOrders = complete;
+          _declineOrders = declined;
+          _acceptedeOrders = accepted;
         });
       }
     } catch (e) {
@@ -189,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     "New Orders",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  TextButton(onPressed: () {}, child: const Text("View all")),
                 ],
               ),
               const SizedBox(height: 8),
@@ -254,7 +263,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Complete orders",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  TextButton(onPressed: () {}, child: const Text("View all")),
                 ],
               ),
               const SizedBox(height: 8),
@@ -273,6 +281,117 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: _completeOrders.length,
                           itemBuilder: (context, index) {
                             final order = _completeOrders[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.purple[100],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        order["date"]!,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      Text(
+                                        order["time"]!,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+              ),
+              const SizedBox(height: 16),
+
+              // Complete Orders Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Accept orders",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child:
+                    _acceptedeOrders.isEmpty
+                        ? const Center(
+                          child: Text(
+                            "Empty",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _acceptedeOrders.length,
+                          itemBuilder: (context, index) {
+                            final order = _acceptedeOrders[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.purple[100],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        order["date"]!,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      Text(
+                                        order["time"]!,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Decline orders",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child:
+                    _declineOrders.isEmpty
+                        ? const Center(
+                          child: Text(
+                            "Empty",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _declineOrders.length,
+                          itemBuilder: (context, index) {
+                            final order = _declineOrders[index];
                             return Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: Container(
