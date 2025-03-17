@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1076416262345",
+    "project_id": "cleanerapp-d8f4c",
+    "storage_bucket": "cleanerapp-d8f4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076416262345:android:d992497d25aa5af63d1d18",
+        "android_client_info": {
+          "package_name": "com.example.clean_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuKr1PgWiupeyUPvEMuahlnwNIAJiig9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076416262345:android:6034fb9b4d0401f23d1d18",
+        "android_client_info": {
+          "package_name": "com.example.cleaner_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuKr1PgWiupeyUPvEMuahlnwNIAJiig9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
